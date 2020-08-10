@@ -37,7 +37,7 @@
         {
             VOS os = new VOS();
             os.FileSystem.Mount("/", new MirrorStorage("../../rootfs"));
-            Process p = os.CreateProcess("/bin/vosbox");
+            Process p = os.CreateProcess("/bin/tns");
             p.Shell.In = os.Shell.In;
             p.Shell.Out = os.Shell.Out;
             p.Start(null);
