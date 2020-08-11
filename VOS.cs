@@ -10,6 +10,7 @@ namespace Vos
 
         public VOS()
         {
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
             this.Shell = new Shell()
             {
                 In = System.Console.In,
@@ -17,6 +18,17 @@ namespace Vos
             };
             this.FileSystem = new FileSystem();
         }
+
+        private System.Reflection.Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            System.Reflection.Assembly asm = System.Reflection.Assembly.GetAssembly(typeof(VOS));
+            if (args.Name == "vos, Version=0.0.3.0, Culture=neutral, PublicKeyToken=null")
+            {
+                return asm;
+            }
+            return null;
+        }
+
         public Process CreateProcess(string v)
         {
             Process result = new Process(this);
@@ -49,7 +61,7 @@ namespace Vos
         static void Main(string[] args)
         {
             VOS os = new VOS();
-            os.FileSystem.Mount("/", new MirrorStorage("../../rootfs"));
+            os.FileSystem.Mount("/", new MirrorStorage(args[1]));
             string init = os.FileSystem.ReadAllText("/etc/init");
             string[] lines = init.Split("\r\n".ToCharArray(), System.StringSplitOptions.RemoveEmptyEntries);
             os.Run(lines[0]);
