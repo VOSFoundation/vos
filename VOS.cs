@@ -1,4 +1,6 @@
-﻿namespace Vos
+﻿using System;
+
+namespace Vos
 {
     public class VOS
     {
@@ -32,15 +34,25 @@
             }
             return null;
         }
+        private void Run(string v)
+        {
+            string[] args, line = v.Trim().Split(' ');
+            string app = line[0];
+            args = new string[line.Length - 1];
+            Array.Copy(line, 1, args, 0, args.Length);
+            Process p = this.CreateProcess(app);
+            p.Shell.In = this.Shell.In;
+            p.Shell.Out = this.Shell.Out;
+            p.Start(args);
+        }
         [System.STAThread]
         static void Main(string[] args)
         {
             VOS os = new VOS();
             os.FileSystem.Mount("/", new MirrorStorage("../../rootfs"));
-            Process p = os.CreateProcess("/bin/tns");
-            p.Shell.In = os.Shell.In;
-            p.Shell.Out = os.Shell.Out;
-            p.Start(null);
+            string init = os.FileSystem.ReadAllText("/etc/init");
+            string[] lines = init.Split("\r\n".ToCharArray(), System.StringSplitOptions.RemoveEmptyEntries);
+            os.Run(lines[0]);
             System.Windows.Forms.Application.EnableVisualStyles();
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
             System.Windows.Forms.Application.Run();
