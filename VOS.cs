@@ -22,7 +22,7 @@ namespace Vos
         private System.Reflection.Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             System.Reflection.Assembly asm = System.Reflection.Assembly.GetAssembly(typeof(VOS));
-            if (args.Name == "vos, Version=0.0.3.0, Culture=neutral, PublicKeyToken=null")
+            if (args.Name.StartsWith("vos, "))
             {
                 return asm;
             }
@@ -58,7 +58,7 @@ namespace Vos
             p.Start(args);
         }
         [System.STAThread]
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             VOS os = new VOS();
             os.FileSystem.Mount("/", new MirrorStorage(args[1]));
